@@ -4,12 +4,19 @@ import tkinter as tk
 class Card:
     def __init__(self, master, image_path, command):
         self.image_path = image_path
-        self.image = Image.open(image_path)
-        self.image = self.image.resize((100, 100))
+        self.image = Image.open(image_path).resize((100, 100))
         self.photo = ImageTk.PhotoImage(self.image)
-        self.button = tk.Button(master, image=self.photo, command=command)
+
+        self.button = tk.Button(master, command=command)
+        self.back_photo = None
         self.is_flipped = False
         self.is_matched = False
+
+    def set_back_image(self, back_photo):
+        self.back_photo = back_photo
+
+    def show_back(self):
+        self.button.config(image=self.back_photo)
 
     def flip(self):
         if not self.is_flipped and not self.is_matched:
@@ -18,8 +25,9 @@ class Card:
 
     def hide(self):
         if not self.is_matched:
-            self.button.config(image=self.back_image)
+            self.button.config(image=self.back_photo)
             self.is_flipped = False
 
     def match(self):
         self.is_matched = True
+        self.button.config(state=tk.DISABLED)
