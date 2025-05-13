@@ -7,7 +7,7 @@ class Card:
         self.image = Image.open(image_path).resize((100, 100))
         self.photo = ImageTk.PhotoImage(self.image)
 
-        self.button = tk.Button(master, command=command)
+        self.button = tk.Button(master, command=command, relief="ridge", borderwidth=3, bg="#f0f0f0", activebackground="#d0f0d0")
         self.back_photo = None
         self.is_flipped = False
         self.is_matched = False
