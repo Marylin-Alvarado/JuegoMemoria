@@ -3,12 +3,16 @@ import random
 from card import Card
 from PIL import Image, ImageTk
 import os
+import time
 
 class MemoryGame:
     def __init__(self, master):
         self.master = master
         self.level = 1
         self.locked = False
+        self.start_time = 0
+        self.bg_color = "#f0f8ff"  # azul claro
+        self.master.configure(bg=self.bg_color)
         self.start_game()
 
     def start_game(self):
@@ -17,12 +21,24 @@ class MemoryGame:
 
         self.cards = []
         self.first_card = None
+        self.start_time = time.time()  # Guardamos el tiempo de inicio del nivel
+
         self.load_images()
         self.create_board()
 
-        # Título del nivel
-        self.label = tk.Label(self.master, text=f"Nivel {self.level}", font=("Arial", 16))
+        # Etiqueta del nivel
+        self.label = tk.Label(self.master, text=f"🌼 Nivel {self.level}", font=("Arial", 16, "bold"), bg=self.bg_color)
         self.label.grid(row=0, column=0, columnspan=4, pady=10)
+
+        # Temporizador en pantalla
+        self.timer_label = tk.Label(self.master, text="Tiempo: 0s", font=("Arial", 12), bg=self.bg_color)
+        self.timer_label.grid(row=0, column=3, sticky="e", padx=10)
+        self.update_timer()
+
+    def update_timer(self):
+        elapsed = int(time.time() - self.start_time)
+        self.timer_label.config(text=f"Tiempo: {elapsed}s")
+        self.master.after(1000, self.update_timer)
 
     def load_images(self):
         assets_path = os.path.join(os.getcwd(), 'assets')
@@ -84,10 +100,15 @@ class MemoryGame:
             self.master.after(500, self.show_level_complete)
 
     def show_level_complete(self):
+        tiempo = int(time.time() - self.start_time)
         popup = tk.Toplevel(self.master)
         popup.title("¡Bien hecho!")
-        tk.Label(popup, text=f"¡Nivel {self.level} superado!", font=("Arial", 14)).pack(padx=20, pady=10)
-        tk.Button(popup, text="Siguiente nivel", command=lambda: self.advance_level(popup)).pack(pady=10)
+        popup.configure(bg="#d0f0c0")  # Verde claro
+
+        msg = f"😄 ¡Nivel {self.level} superado!\nTiempo: {tiempo} segundos"
+        tk.Label(popup, text=msg, font=("Arial", 14), bg="#d0f0c0").pack(padx=20, pady=10)
+
+        tk.Button(popup, text="Siguiente nivel ▶️", command=lambda: self.advance_level(popup)).pack(pady=10)
 
     def advance_level(self, popup):
         popup.destroy()
